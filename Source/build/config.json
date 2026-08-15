@@ -1,0 +1,5 @@
+{
+    "api_address": "http://localhost:11434/api/chat",
+    "dummy": false,
+    "model": "huihui_ai/qwen3-coder-abliterated:latest"
+}

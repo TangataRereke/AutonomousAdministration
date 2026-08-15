@@ -1,0 +1,2 @@
+We need a binary png image file created. Since it is binary, generate a python script to output it.
+The script should output output_image.png.

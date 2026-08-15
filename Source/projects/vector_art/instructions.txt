@@ -1,0 +1,2 @@
+Create an SVG image. The image should be beautifully designed with circle layers.
+It should be clean and contain standard XML namespace declarations.

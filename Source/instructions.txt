@@ -1,0 +1,269 @@
+# CURRENT STATE OF PLAY
+This is a prototype for a program to automatically generate a series of administrative things. Things like text files, spreadsheets, svgs, code, websites, icons etc. The code has not yet been done.
+
+# CONCEPT
+The concept is to use ollama api on model huihui_ai/qwen3-code-abliterated:latest. However use DUMMY API's for testing in jules as AI is too costly for api agents.
+
+Under Projects the program polls for commands to do. It then processes anything not yet done. Initially I will create instructions.txt. Then the AI will create sub-projects, sub-tasks to do under sub-foldrers. The final result is in the Output folder under the project. Multiple files possible.
+
+# PROCESS
+1. For a project check for instructions.txt (or sub-sequent instructions written by AI)
+2. Ask AI to break it down OR ask questions. If there are questions, place then under questions.txt under the sub-folder and I'll answer them manually. When questions.txt is deleted it can check instructions.txt again.
+3. The AI tasks broken down is created in separate sub-folders under projects for the current project, perhaps manually added.
+4. The AI CAN return commands for the program to run which you need to put in code to intercept, see below for commands.
+5. Everytime a sub-task is broken down or AI fulfills a task, a separate AI process is called to ask if what returns from AI fully follows instructions. Two Yes in a row means continue, two No's in a row means restart.
+6. Anything that can be tested a script needs to be created using TDD to ensure the AI runs successfully any code.
+7. Anything MUST be broken down. e.g. A program would be broken down into classes, then descriptions of public methods, then method stubs, then method stub tests, then a separate AI process for each method. The concept here is to do as many separate AI calls as possible to avoid hallucinating.
+
+# ENVIRONMENT 
+The environment is Ubuntu 24.04 with C++ commands installed, ffmpeg natively, php (for websites) and python3. conda activate base for more complex commands.
+
+System has a apache server running.
+
+# COMMANDS
+Put in code to let AI fire off the following commands if it wants to:
+1. GET_URL - We go to the web-site, download it and send it to AI with the next instruction.
+2. WEB_SEARCH - The same as GET_URL but it does a search with criteria and returns the results
+3. POST_URL - Posts to a websites
+4. ZIP - Zips up an archive
+5. MOVE - Performs a move command (or rename)
+6. COPY - Copy command
+
+# DETAILED INSTRUCTIONS
+
+Write a C++ program that acts as an AI-assisted project builder using iterative development with validation.
+
+The program must track state across multiple API calls to build complete projects piece by piece with a two-step validation system to prevent hallucinations.
+
+The program will run on Ubuntu 24.04.
+
+The program will use the Ollama API running locally. Default address is http://localhost:11434/api/generate. The model to use is specified in a config file or passed as a command line argument. Default model is qwen3-coder-abliterated.
+
+The program should have the ability to execute external commands for file operations and data retrieval. These commands include but are not limited to ftp, http, sftp, post, get, search, zip, and basic image operations like png manipulation. For each command, the program will use the appropriate system tool or library. Implement a command execution framework that allows the AI to request these operations when needed during project generation.
+
+PROJECT STRUCTURE
+
+projects/
+  project_name/
+    instructions.txt
+  another_project/
+    instructions.txt
+
+output/
+  project_name/
+    all generated files
+  another_project/
+    all generated files
+
+VALIDATION SYSTEM
+
+For every generation step, the program must perform a two-step validation.
+
+Step V1 - Generate
+Send generation request to API. Receive content.
+
+Step V2 - Validate First Time
+Send validation request to API. Prompt text is "Does this content fully and correctly fulfill this request? Request is original request. Content is generated content. Answer only YES or NO with a brief reason."
+
+If YES, store as validation_1 equals true. If NO, store as validation_1 equals false with reason.
+
+Step V3 - Validate Second Time
+If validation_1 was true, send second validation request with same prompt. If validation_2 is also true, accept the content. If validation_2 is false, reject and retry.
+
+If either validation_1 or validation_2 is false, send a correction request to API with this prompt text "Fix this content to fulfill the request. Request is original request. Current content is generated content. Issue is validation reason. Return the complete corrected content."
+
+Generate new content. Repeat validation process from V2. Maximum retries is 3. After 3 failures, mark file as failed and continue.
+
+Rules for Two-Step Validation:
+- Two consecutive YES answers means content accepted
+- Two consecutive NO answers means retry with correction
+- One YES and one NO means retry with correction
+- Always include the validation reason in the correction request
+- This catches hallucinations and partial completions
+
+PROGRAM BEHAVIOR
+
+For each project found in the projects folder, the program does the following steps.
+
+Step 1 - Read Instructions
+Read projects/project_name/instructions.txt completely.
+
+Step 2 - Analyze Project Type
+Send first API call with this prompt text "Analyze this project description. Identify project type which could be website, SVG, C++ app, Python script, music notation, or 3D model. Identify all files that need to be created with their extensions. Identify a high-level plan of what each file does. Identify dependencies between files. Identify the order files should be created in. Return as JSON with fields project_type, files, dependencies, and creation_order."
+
+Validate the JSON with two-step validation before accepting.
+
+Step 3 - Create State Tracker
+For each file in the project, create a state object with the following fields:
+- Filename as string
+- Type as string which can be header, source, html, css, js, or svg
+- Description as string
+- Dependencies as array of strings
+- Status as string with values pending, in_progress, complete, or failed
+- Content as string which accumulates across calls
+- Version as integer
+- Validation_count as integer
+- Retry_count as integer
+
+Step 4 - Generate Files Iteratively
+For each file in creation_order, perform steps 4a through 4d.
+
+Step 4a - Prepare Context
+Gather context for this file including its own description, content of dependencies already generated with full content of files it depends on, project type, and any style guidelines from instructions.
+
+Step 4b - Generate Initial Version
+Send API call with this prompt text "Generate filename for a project_type project. Description is description. Dependencies already created are dependency1 content and dependency2 content. Guidelines are from instructions. Generate the complete file content. Be specific and complete."
+
+Apply two-step validation to the generated content. If validation fails, retry up to 3 times with correction requests. Save accepted content to state with version 1.
+
+Step 4c - Validate and Refine
+If the file is complex such as SVG with multiple elements or large C++ class, make additional API calls to refine. For each refinement, apply two-step validation.
+
+For SVG:
+- Generation prompt: "Here is the current SVG which is content. Now add next element at position coordinates based on existing elements. Return only the complete updated SVG."
+- Validation prompt: "Does this SVG correctly add element at position while preserving all existing elements? Answer YES or NO with reason."
+
+For C++:
+- Generation prompt: "Here is the current header which is content. Now implement method method_name with signature signature. Return only the complete updated header."
+- Validation prompt: "Does this header correctly implement method_name with signature while preserving all existing code? Answer YES or NO with reason."
+
+For website:
+- Generation prompt: "Here is the current HTML which is content. Now add next section. Return only the complete updated HTML."
+- Validation prompt: "Does this HTML correctly add section while preserving all existing content? Answer YES or NO with reason."
+
+After each refinement, validate. If validation fails, retry that refinement step only.
+
+Step 4d - Save to Disk
+After all refinements for a file are complete and validated, save to output/project_name/filename.
+
+Step 5 - Handle Dependencies
+If file B depends on file A, generate file A completely with full validation first. When generating file B, include file A's full content in the context. File B can reference file A's classes, functions, and variables. Validate file B's references to file A are correct.
+
+Dependency order examples:
+- C++: headers before cpp files, base classes before derived
+- Website: HTML before CSS (or vice versa depending on design), JS after HTML
+- SVG: background layers before foreground, shapes before text
+
+Step 6 - Chunking for Large Files
+If a file is too large for one API call, break it into logical chunks such as one class per chunk, one section per chunk, or one shape per chunk. Generate each chunk separately with its own API call. Validate each chunk with two-step validation before moving to the next. Pass previous chunks as context for the next. Stitch all chunks together at the end. Validate the complete stitched file with two-step validation. Save the complete file.
+
+Example: A large SVG with 50 shapes would generate 5 shapes per call across 10 calls, validating each batch before proceeding.
+
+Step 7 - Binary Files
+If a required file is binary such as WAV, MP4, or PNG, generate a Python script that creates the binary file. Validate the Python script with two-step validation. Include the script in output/project_name/. Add to README instructions on how to run the script.
+
+Step 8 - Command Execution Framework
+The program must provide a framework for executing external commands. The AI can request these operations during project generation. Implement support for the following commands:
+
+- ftp: Transfer files using FTP protocol
+- http: Make HTTP requests (GET, POST, PUT, DELETE)
+- sftp: Secure file transfer using SSH
+- post: Send POST requests to web services
+- get: Retrieve data from URLs or APIs
+- search: Search for files or content within the system
+- zip: Compress files or folders into zip archives
+- png: Basic PNG image operations (resize, crop, convert, optimize)
+
+For each command, the program will use the appropriate system tool or library. If a command is requested that is not implemented, return an error message.
+
+Step 9 - Progress Tracking
+Print to console:
+- "Processing project_name"
+- "File 1/X: filename.ext - generating..."
+- "File 1/X: filename.ext - validation round 1: YES"
+- "File 1/X: filename.ext - validation round 2: YES"
+- "File 1/X: filename.ext - complete (Y versions, Z retries)"
+- Continue for all files
+- "Project project_name complete. X files generated."
+
+If validation fails, print:
+- "File 1/X: filename.ext - validation round 1: NO (reason: ...)"
+- "File 1/X: filename.ext - retrying with corrections..."
+
+Step 10 - Multiple Projects
+Process each project in the projects folder independently. One at a time. Print separate summaries.
+
+Step 11 - Error Handling
+- If API call fails, retry up to 3 times with exponential backoff. If still fails, mark file as failed and continue. Print error message.
+- If validation fails 3 times, mark file as failed and print "File filename.ext failed validation after 3 retries" and continue with next file.
+- If file cannot be written, print error message and continue with next file.
+- If instructions.txt is missing, skip that project and print warning.
+
+Step 12 - Summary
+After all projects, print:
+- "=== SUMMARY ==="
+- "Projects processed: N"
+- For each project: "project_name: X files generated, Y failed"
+- File list with retries
+- "Total files generated: N"
+- "Total files failed: N"
+
+API PROMPT TEMPLATES
+
+Initial analysis: "Analyze this project description and return JSON with project_type, files list with descriptions, dependencies, and creation order."
+
+File generation: "Generate complete content for FILENAME. Description is DESCRIPTION. Context from dependencies is DEPENDENCIES. Project type is TYPE. Be specific and complete."
+
+Refinement SVG: "Here is the current SVG which is CONTENT. Now add SHAPE at POSITION. Return only the complete updated SVG."
+
+Refinement C++: "Here is the current header which is CONTENT. Now implement METHOD. Return only the complete updated header."
+
+Refinement HTML: "Here is the current HTML which is CONTENT. Now add SECTION. Return only the complete updated HTML."
+
+Validation: "Does this content fully and correctly fulfill this request? Request is REQUEST. Content is CONTENT. Answer only YES or NO with a brief reason."
+
+Correction: "Fix this content to fulfill the request. Request is REQUEST. Current content is CONTENT. Issue is REASON. Return the complete corrected content."
+
+VALIDATION RULES SUMMARY
+
+- Always validate every generation and refinement
+- Two YES in a row means accept
+- Two NO in a row means retry
+- Mixed result means retry
+- Maximum 3 retries per item
+- Include validation reason in correction requests
+- Track validation count and retry count in state
+
+STATE TRACKING REQUIREMENTS
+
+The program must track:
+- Which files have been generated
+- Which files are in progress
+- What version each file is on
+- Content of each file (accumulated)
+- Dependencies between files
+- Project type
+- Creation order
+- Validation count for each file
+- Retry count for each file
+- Validation results (YES/NO with reasons)
+
+The program must pass existing file content as context for each new file generation. The program must build iteratively one piece at a time, not all at once.
+
+TECHNICAL REQUIREMENTS
+
+- Use C++17
+- Use libcurl for HTTP requests including the Ollama API and external HTTP commands
+- Use nlohmann/json for JSON parsing
+- Use filesystem library for folder operations
+- Use standard library for string manipulation
+- Use libssh for SFTP support if available
+- Use libpng or system png tools for PNG operations
+- Use libzip for zip archive operations
+- Comment code thoroughly
+
+PROVIDE COMPLETE SOURCE CODE with:
+- Main function with command line argument support for model name and API address
+- Configuration file loading (config.json or similar) with defaults
+- Project scanning
+- API client with retry logic for Ollama
+- Two-step validation system
+- State management
+- File generation with refinement
+- Validation logic
+- Command execution framework with support for ftp, http, sftp, post, get, search, zip, png operations
+- Error handling
+- Progress output
+- Summary generation
+
+END

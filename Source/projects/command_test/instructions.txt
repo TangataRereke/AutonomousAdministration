@@ -1,0 +1,2 @@
+Please test our command execution framework.
+Include command_test in the instructions.

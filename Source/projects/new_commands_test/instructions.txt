@@ -1,0 +1,2 @@
+Please test our new commands.
+Include new commands inside the test workflow.
