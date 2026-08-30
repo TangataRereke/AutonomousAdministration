@@ -1,2 +1,0 @@
-Create a simple administrative website. It must have html, css, and js files.
-We want a beautiful main dashboard webpage with styling and dynamic script loading.

@@ -81,12 +81,12 @@ clean: CMakeFiles/AutonomousAdministration.dir/clean
 CMakeFiles/AutonomousAdministration.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/AutonomousAdministration.dir/build.make CMakeFiles/AutonomousAdministration.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/AutonomousAdministration.dir/build.make CMakeFiles/AutonomousAdministration.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/james/source/AutonomousAdministration/Source/build/CMakeFiles --progress-num=1,2 "Built target AutonomousAdministration"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/james/source/AutonomousAdministration/Source/build/CMakeFiles --progress-num=1,2,3,4,5,6,7 "Built target AutonomousAdministration"
 .PHONY : CMakeFiles/AutonomousAdministration.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/AutonomousAdministration.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/source/AutonomousAdministration/Source/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/source/AutonomousAdministration/Source/build/CMakeFiles 7
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/AutonomousAdministration.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/source/AutonomousAdministration/Source/build/CMakeFiles 0
 .PHONY : CMakeFiles/AutonomousAdministration.dir/rule

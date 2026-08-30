@@ -24,6 +24,11 @@ find_path(SSH_INCLUDE_DIR NAMES libssh/libssh.h)
 
 add_executable(AutonomousAdministration
     main.cpp
+    IWorker.cpp
+    ProjectScanner.cpp
+    ProjectCoordinator.cpp
+    RequirementsGatherer.cpp
+    APIRequest.cpp
 )
 
 # Include directories

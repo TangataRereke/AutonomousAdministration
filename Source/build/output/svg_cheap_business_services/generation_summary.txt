@@ -1,2 +1,0 @@
-Project: svg_cheap_business_services
-Recursive steps processed: 1

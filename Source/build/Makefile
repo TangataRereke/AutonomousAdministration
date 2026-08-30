@@ -129,6 +129,126 @@ AutonomousAdministration/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/AutonomousAdministration.dir/build.make CMakeFiles/AutonomousAdministration.dir/build
 .PHONY : AutonomousAdministration/fast
 
+APIRequest.o: APIRequest.cpp.o
+.PHONY : APIRequest.o
+
+# target to build an object file
+APIRequest.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AutonomousAdministration.dir/build.make CMakeFiles/AutonomousAdministration.dir/APIRequest.cpp.o
+.PHONY : APIRequest.cpp.o
+
+APIRequest.i: APIRequest.cpp.i
+.PHONY : APIRequest.i
+
+# target to preprocess a source file
+APIRequest.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AutonomousAdministration.dir/build.make CMakeFiles/AutonomousAdministration.dir/APIRequest.cpp.i
+.PHONY : APIRequest.cpp.i
+
+APIRequest.s: APIRequest.cpp.s
+.PHONY : APIRequest.s
+
+# target to generate assembly for a file
+APIRequest.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AutonomousAdministration.dir/build.make CMakeFiles/AutonomousAdministration.dir/APIRequest.cpp.s
+.PHONY : APIRequest.cpp.s
+
+IWorker.o: IWorker.cpp.o
+.PHONY : IWorker.o
+
+# target to build an object file
+IWorker.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AutonomousAdministration.dir/build.make CMakeFiles/AutonomousAdministration.dir/IWorker.cpp.o
+.PHONY : IWorker.cpp.o
+
+IWorker.i: IWorker.cpp.i
+.PHONY : IWorker.i
+
+# target to preprocess a source file
+IWorker.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AutonomousAdministration.dir/build.make CMakeFiles/AutonomousAdministration.dir/IWorker.cpp.i
+.PHONY : IWorker.cpp.i
+
+IWorker.s: IWorker.cpp.s
+.PHONY : IWorker.s
+
+# target to generate assembly for a file
+IWorker.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AutonomousAdministration.dir/build.make CMakeFiles/AutonomousAdministration.dir/IWorker.cpp.s
+.PHONY : IWorker.cpp.s
+
+ProjectCoordinator.o: ProjectCoordinator.cpp.o
+.PHONY : ProjectCoordinator.o
+
+# target to build an object file
+ProjectCoordinator.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AutonomousAdministration.dir/build.make CMakeFiles/AutonomousAdministration.dir/ProjectCoordinator.cpp.o
+.PHONY : ProjectCoordinator.cpp.o
+
+ProjectCoordinator.i: ProjectCoordinator.cpp.i
+.PHONY : ProjectCoordinator.i
+
+# target to preprocess a source file
+ProjectCoordinator.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AutonomousAdministration.dir/build.make CMakeFiles/AutonomousAdministration.dir/ProjectCoordinator.cpp.i
+.PHONY : ProjectCoordinator.cpp.i
+
+ProjectCoordinator.s: ProjectCoordinator.cpp.s
+.PHONY : ProjectCoordinator.s
+
+# target to generate assembly for a file
+ProjectCoordinator.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AutonomousAdministration.dir/build.make CMakeFiles/AutonomousAdministration.dir/ProjectCoordinator.cpp.s
+.PHONY : ProjectCoordinator.cpp.s
+
+ProjectScanner.o: ProjectScanner.cpp.o
+.PHONY : ProjectScanner.o
+
+# target to build an object file
+ProjectScanner.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AutonomousAdministration.dir/build.make CMakeFiles/AutonomousAdministration.dir/ProjectScanner.cpp.o
+.PHONY : ProjectScanner.cpp.o
+
+ProjectScanner.i: ProjectScanner.cpp.i
+.PHONY : ProjectScanner.i
+
+# target to preprocess a source file
+ProjectScanner.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AutonomousAdministration.dir/build.make CMakeFiles/AutonomousAdministration.dir/ProjectScanner.cpp.i
+.PHONY : ProjectScanner.cpp.i
+
+ProjectScanner.s: ProjectScanner.cpp.s
+.PHONY : ProjectScanner.s
+
+# target to generate assembly for a file
+ProjectScanner.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AutonomousAdministration.dir/build.make CMakeFiles/AutonomousAdministration.dir/ProjectScanner.cpp.s
+.PHONY : ProjectScanner.cpp.s
+
+RequirementsGatherer.o: RequirementsGatherer.cpp.o
+.PHONY : RequirementsGatherer.o
+
+# target to build an object file
+RequirementsGatherer.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AutonomousAdministration.dir/build.make CMakeFiles/AutonomousAdministration.dir/RequirementsGatherer.cpp.o
+.PHONY : RequirementsGatherer.cpp.o
+
+RequirementsGatherer.i: RequirementsGatherer.cpp.i
+.PHONY : RequirementsGatherer.i
+
+# target to preprocess a source file
+RequirementsGatherer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AutonomousAdministration.dir/build.make CMakeFiles/AutonomousAdministration.dir/RequirementsGatherer.cpp.i
+.PHONY : RequirementsGatherer.cpp.i
+
+RequirementsGatherer.s: RequirementsGatherer.cpp.s
+.PHONY : RequirementsGatherer.s
+
+# target to generate assembly for a file
+RequirementsGatherer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AutonomousAdministration.dir/build.make CMakeFiles/AutonomousAdministration.dir/RequirementsGatherer.cpp.s
+.PHONY : RequirementsGatherer.cpp.s
+
 main.o: main.cpp.o
 .PHONY : main.o
 
@@ -162,6 +282,21 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... AutonomousAdministration"
+	@echo "... APIRequest.o"
+	@echo "... APIRequest.i"
+	@echo "... APIRequest.s"
+	@echo "... IWorker.o"
+	@echo "... IWorker.i"
+	@echo "... IWorker.s"
+	@echo "... ProjectCoordinator.o"
+	@echo "... ProjectCoordinator.i"
+	@echo "... ProjectCoordinator.s"
+	@echo "... ProjectScanner.o"
+	@echo "... ProjectScanner.i"
+	@echo "... ProjectScanner.s"
+	@echo "... RequirementsGatherer.o"
+	@echo "... RequirementsGatherer.i"
+	@echo "... RequirementsGatherer.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

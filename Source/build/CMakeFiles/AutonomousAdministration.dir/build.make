@@ -83,14 +83,94 @@ CMakeFiles/AutonomousAdministration.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/AutonomousAdministration.dir/main.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/james/source/AutonomousAdministration/Source/main.cpp -o CMakeFiles/AutonomousAdministration.dir/main.cpp.s
 
+CMakeFiles/AutonomousAdministration.dir/IWorker.cpp.o: CMakeFiles/AutonomousAdministration.dir/flags.make
+CMakeFiles/AutonomousAdministration.dir/IWorker.cpp.o: /home/james/source/AutonomousAdministration/Source/IWorker.cpp
+CMakeFiles/AutonomousAdministration.dir/IWorker.cpp.o: CMakeFiles/AutonomousAdministration.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/james/source/AutonomousAdministration/Source/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/AutonomousAdministration.dir/IWorker.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/AutonomousAdministration.dir/IWorker.cpp.o -MF CMakeFiles/AutonomousAdministration.dir/IWorker.cpp.o.d -o CMakeFiles/AutonomousAdministration.dir/IWorker.cpp.o -c /home/james/source/AutonomousAdministration/Source/IWorker.cpp
+
+CMakeFiles/AutonomousAdministration.dir/IWorker.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/AutonomousAdministration.dir/IWorker.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/james/source/AutonomousAdministration/Source/IWorker.cpp > CMakeFiles/AutonomousAdministration.dir/IWorker.cpp.i
+
+CMakeFiles/AutonomousAdministration.dir/IWorker.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/AutonomousAdministration.dir/IWorker.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/james/source/AutonomousAdministration/Source/IWorker.cpp -o CMakeFiles/AutonomousAdministration.dir/IWorker.cpp.s
+
+CMakeFiles/AutonomousAdministration.dir/ProjectScanner.cpp.o: CMakeFiles/AutonomousAdministration.dir/flags.make
+CMakeFiles/AutonomousAdministration.dir/ProjectScanner.cpp.o: /home/james/source/AutonomousAdministration/Source/ProjectScanner.cpp
+CMakeFiles/AutonomousAdministration.dir/ProjectScanner.cpp.o: CMakeFiles/AutonomousAdministration.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/james/source/AutonomousAdministration/Source/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/AutonomousAdministration.dir/ProjectScanner.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/AutonomousAdministration.dir/ProjectScanner.cpp.o -MF CMakeFiles/AutonomousAdministration.dir/ProjectScanner.cpp.o.d -o CMakeFiles/AutonomousAdministration.dir/ProjectScanner.cpp.o -c /home/james/source/AutonomousAdministration/Source/ProjectScanner.cpp
+
+CMakeFiles/AutonomousAdministration.dir/ProjectScanner.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/AutonomousAdministration.dir/ProjectScanner.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/james/source/AutonomousAdministration/Source/ProjectScanner.cpp > CMakeFiles/AutonomousAdministration.dir/ProjectScanner.cpp.i
+
+CMakeFiles/AutonomousAdministration.dir/ProjectScanner.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/AutonomousAdministration.dir/ProjectScanner.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/james/source/AutonomousAdministration/Source/ProjectScanner.cpp -o CMakeFiles/AutonomousAdministration.dir/ProjectScanner.cpp.s
+
+CMakeFiles/AutonomousAdministration.dir/ProjectCoordinator.cpp.o: CMakeFiles/AutonomousAdministration.dir/flags.make
+CMakeFiles/AutonomousAdministration.dir/ProjectCoordinator.cpp.o: /home/james/source/AutonomousAdministration/Source/ProjectCoordinator.cpp
+CMakeFiles/AutonomousAdministration.dir/ProjectCoordinator.cpp.o: CMakeFiles/AutonomousAdministration.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/james/source/AutonomousAdministration/Source/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/AutonomousAdministration.dir/ProjectCoordinator.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/AutonomousAdministration.dir/ProjectCoordinator.cpp.o -MF CMakeFiles/AutonomousAdministration.dir/ProjectCoordinator.cpp.o.d -o CMakeFiles/AutonomousAdministration.dir/ProjectCoordinator.cpp.o -c /home/james/source/AutonomousAdministration/Source/ProjectCoordinator.cpp
+
+CMakeFiles/AutonomousAdministration.dir/ProjectCoordinator.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/AutonomousAdministration.dir/ProjectCoordinator.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/james/source/AutonomousAdministration/Source/ProjectCoordinator.cpp > CMakeFiles/AutonomousAdministration.dir/ProjectCoordinator.cpp.i
+
+CMakeFiles/AutonomousAdministration.dir/ProjectCoordinator.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/AutonomousAdministration.dir/ProjectCoordinator.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/james/source/AutonomousAdministration/Source/ProjectCoordinator.cpp -o CMakeFiles/AutonomousAdministration.dir/ProjectCoordinator.cpp.s
+
+CMakeFiles/AutonomousAdministration.dir/RequirementsGatherer.cpp.o: CMakeFiles/AutonomousAdministration.dir/flags.make
+CMakeFiles/AutonomousAdministration.dir/RequirementsGatherer.cpp.o: /home/james/source/AutonomousAdministration/Source/RequirementsGatherer.cpp
+CMakeFiles/AutonomousAdministration.dir/RequirementsGatherer.cpp.o: CMakeFiles/AutonomousAdministration.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/james/source/AutonomousAdministration/Source/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/AutonomousAdministration.dir/RequirementsGatherer.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/AutonomousAdministration.dir/RequirementsGatherer.cpp.o -MF CMakeFiles/AutonomousAdministration.dir/RequirementsGatherer.cpp.o.d -o CMakeFiles/AutonomousAdministration.dir/RequirementsGatherer.cpp.o -c /home/james/source/AutonomousAdministration/Source/RequirementsGatherer.cpp
+
+CMakeFiles/AutonomousAdministration.dir/RequirementsGatherer.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/AutonomousAdministration.dir/RequirementsGatherer.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/james/source/AutonomousAdministration/Source/RequirementsGatherer.cpp > CMakeFiles/AutonomousAdministration.dir/RequirementsGatherer.cpp.i
+
+CMakeFiles/AutonomousAdministration.dir/RequirementsGatherer.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/AutonomousAdministration.dir/RequirementsGatherer.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/james/source/AutonomousAdministration/Source/RequirementsGatherer.cpp -o CMakeFiles/AutonomousAdministration.dir/RequirementsGatherer.cpp.s
+
+CMakeFiles/AutonomousAdministration.dir/APIRequest.cpp.o: CMakeFiles/AutonomousAdministration.dir/flags.make
+CMakeFiles/AutonomousAdministration.dir/APIRequest.cpp.o: /home/james/source/AutonomousAdministration/Source/APIRequest.cpp
+CMakeFiles/AutonomousAdministration.dir/APIRequest.cpp.o: CMakeFiles/AutonomousAdministration.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/james/source/AutonomousAdministration/Source/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/AutonomousAdministration.dir/APIRequest.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/AutonomousAdministration.dir/APIRequest.cpp.o -MF CMakeFiles/AutonomousAdministration.dir/APIRequest.cpp.o.d -o CMakeFiles/AutonomousAdministration.dir/APIRequest.cpp.o -c /home/james/source/AutonomousAdministration/Source/APIRequest.cpp
+
+CMakeFiles/AutonomousAdministration.dir/APIRequest.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/AutonomousAdministration.dir/APIRequest.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/james/source/AutonomousAdministration/Source/APIRequest.cpp > CMakeFiles/AutonomousAdministration.dir/APIRequest.cpp.i
+
+CMakeFiles/AutonomousAdministration.dir/APIRequest.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/AutonomousAdministration.dir/APIRequest.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/james/source/AutonomousAdministration/Source/APIRequest.cpp -o CMakeFiles/AutonomousAdministration.dir/APIRequest.cpp.s
+
 # Object files for target AutonomousAdministration
 AutonomousAdministration_OBJECTS = \
-"CMakeFiles/AutonomousAdministration.dir/main.cpp.o"
+"CMakeFiles/AutonomousAdministration.dir/main.cpp.o" \
+"CMakeFiles/AutonomousAdministration.dir/IWorker.cpp.o" \
+"CMakeFiles/AutonomousAdministration.dir/ProjectScanner.cpp.o" \
+"CMakeFiles/AutonomousAdministration.dir/ProjectCoordinator.cpp.o" \
+"CMakeFiles/AutonomousAdministration.dir/RequirementsGatherer.cpp.o" \
+"CMakeFiles/AutonomousAdministration.dir/APIRequest.cpp.o"
 
 # External object files for target AutonomousAdministration
 AutonomousAdministration_EXTERNAL_OBJECTS =
 
 AutonomousAdministration: CMakeFiles/AutonomousAdministration.dir/main.cpp.o
+AutonomousAdministration: CMakeFiles/AutonomousAdministration.dir/IWorker.cpp.o
+AutonomousAdministration: CMakeFiles/AutonomousAdministration.dir/ProjectScanner.cpp.o
+AutonomousAdministration: CMakeFiles/AutonomousAdministration.dir/ProjectCoordinator.cpp.o
+AutonomousAdministration: CMakeFiles/AutonomousAdministration.dir/RequirementsGatherer.cpp.o
+AutonomousAdministration: CMakeFiles/AutonomousAdministration.dir/APIRequest.cpp.o
 AutonomousAdministration: CMakeFiles/AutonomousAdministration.dir/build.make
 AutonomousAdministration: /usr/lib/x86_64-linux-gnu/libcurl.so
 AutonomousAdministration: /usr/lib/x86_64-linux-gnu/libpng.so
@@ -98,7 +178,7 @@ AutonomousAdministration: /usr/lib/x86_64-linux-gnu/libz.so
 AutonomousAdministration: /usr/lib/x86_64-linux-gnu/libzip.so
 AutonomousAdministration: /usr/lib/x86_64-linux-gnu/libssh.so
 AutonomousAdministration: CMakeFiles/AutonomousAdministration.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/james/source/AutonomousAdministration/Source/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable AutonomousAdministration"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/james/source/AutonomousAdministration/Source/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable AutonomousAdministration"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/AutonomousAdministration.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

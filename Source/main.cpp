@@ -12,7 +12,6 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <map>
 #include <filesystem>
 #include <chrono>
 #include <thread>
@@ -753,7 +752,7 @@ std::string call_ollama_api(const std::string& prompt, const std::string& curren
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_str.c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_string);
-    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 300L);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 600L);
     curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 10L);
 
     int backoff_ms = 1000;
@@ -770,7 +769,7 @@ std::string call_ollama_api(const std::string& prompt, const std::string& curren
         std::cerr << "[API Warning] Call failed (" << curl_easy_strerror(res)
                   << "). Retrying in " << backoff_ms << "ms...\n";
         std::this_thread::sleep_for(std::chrono::milliseconds(backoff_ms));
-        backoff_ms *= 2;
+        //backoff_ms *= 2;
     }
 
 
@@ -835,12 +834,22 @@ bool run_two_step_validation(const std::string& request, std::string& content, c
 
         std::string v1_prompt;
         if (is_pm_decision) {
-            v1_prompt = "Does this JSON decision correctly handle the step (generate, decompose, or questions) as requested by the Project Manager instructions?\n"
-                        "<decision>\n" + content + "\n</decision>\n"
-                        "<request>\n" + request + "\n</request>\n"
-                        "Your job is to ensure all steps are broken down logically, there is ample summary information and if something needs to be generated it is generated.\n"
-                        "DO NOT say NO IF the steps are broken down, and there is no impact on quality or outcome. e.g. If you think something can be achieved in less steps or less files, DO NOT say NO based on that alone. Saying NO when the outcome is fine will ONLY slow down the delivery process.\n"
-                        "Answer only YES or NO with a brief reason.";        
+            v1_prompt = "Does this content fully and correctly fulfill this request?\n"
+            "Request is " + request + ".\n"
+            "Content is " + content + ".\n"
+            "Your job:\n"
+            "- Ensure all steps are broken down logically (where applicable).\n"
+            "- Check that there is ample summary information if the request asks for it.\n"
+            "- Verify that if something needs to be generated, it is actually generated (not just described).\n"
+            "RULES:\n"
+            "1. Answer only YES or NO with a brief reason.\n"
+            "2. DO NOT say NO if the steps are broken down and there is no impact on quality or outcome.\n"
+            "   For example, if you think something can be achieved in fewer steps or files, do not reject it based on that alone.\n"
+            "3. DO NOT add extra requirements that are not explicitly stated in the request.\n"
+            "   For instance, do not require interactive features, hover effects, or any functionality beyond what the request describes.\n"
+            "   'Clearly labeled' means visible text labels or grouping – it does not imply interactivity.\n"
+            "4. Only reject if the content clearly misses a required component or violates the explicit instructions.\n"
+            "If the content matches the request's description, answer YES. Otherwise NO.\n";
         } else {
             v1_prompt = "Does this content fully and correctly fulfill this request? Request is " + request + ". Content is " + content + ". Answer only YES or NO with a brief reason.";
         }
@@ -864,12 +873,22 @@ bool run_two_step_validation(const std::string& request, std::string& content, c
 
             std::string v2_prompt;
             if (is_pm_decision) {
-                v2_prompt = "Does this JSON decision correctly handle the step (generate, decompose, or questions) as requested by the Project Manager instructions?\n"
-                            "<decision>\n" + content + "\n</decision>\n"
-                            "<request>\n" + request + "\n</request>\n"
-                            "Your job is to ensure all steps are broken down logically, there is ample summary information and if something needs to be generated it is generated.\n"
-                            "DO NOT say NO IF the steps are broken down, and there is no impact on quality or outcome. e.g. If you think something can be achieved in less steps or less files, DO NOT say NO based on that alone. Saying NO when the outcome is fine will ONLY slow down the delivery process.\n"
-                            "Answer only YES or NO with a brief reason.";
+v2_prompt = "Does this content fully and correctly fulfill this request?\n"
+            "Request is " + request + ".\n"
+            "Content is " + content + ".\n"
+            "Your job:\n"
+            "- Ensure all steps are broken down logically (where applicable).\n"
+            "- Check that there is ample summary information if the request asks for it.\n"
+            "- Verify that if something needs to be generated, it is actually generated (not just described).\n"
+            "RULES:\n"
+            "1. Answer only YES or NO with a brief reason.\n"
+            "2. DO NOT say NO if the steps are broken down and there is no impact on quality or outcome.\n"
+            "   For example, if you think something can be achieved in fewer steps or files, do not reject it based on that alone.\n"
+            "3. DO NOT add extra requirements that are not explicitly stated in the request.\n"
+            "   For instance, do not require interactive features, hover effects, or any functionality beyond what the request describes.\n"
+            "   'Clearly labeled' means visible text labels or grouping – it does not imply interactivity.\n"
+            "4. Only reject if the content clearly misses a required component or violates the explicit instructions.\n"
+            "If the content matches the request's description, answer YES. Otherwise NO.\n";
             }   else {
                 v2_prompt = "Does this content fully and correctly fulfill this request? Request is " + request + ". Content is " + content + ". Answer only YES or NO with a brief reason.";
             }
@@ -898,7 +917,7 @@ bool run_two_step_validation(const std::string& request, std::string& content, c
         }
 
         std::cout << "File: " << filename << " - retrying with corrections...\n";
-        std::string correction_prompt = "Fix this content to fulfill the request. Request is " + request + ". Current content is " + content + ". Issue is " + v1_reason + ". Return the complete corrected content.";
+        std::string correction_prompt = "Fix this content to fulfill the request. Request is " + request + ". Current content is " + content + ". Issue is " + v1_reason + ". Return the complete corrected content. IMPORTANT: For 'generate' actions, each file object MUST include 'filename', 'type', and 'description' fields. The 'content' field is optional but 'description' is required. Do not omit 'description'.";
         content = call_ollama_api(correction_prompt, filename, sim_val_state_1);
     }
 
@@ -1097,6 +1116,7 @@ void process_project(const fs::path& project_dir) {
     "- Use 'decompose' only when the sub‑task is genuinely broad and cannot be captured in a single file.\n"
     "  Break it into smaller, independent sub‑tasks that can each be handled by a separate 'generate'.\n"
     "- Do NOT decompose a step that can be done in one file (e.g., 'determine a colour' is a single file).\n"
+    "- Feasibility check: Before using 'generate', ask: 'Can this file be completely defined and generated without external data (e.g., font metrics, coordinate systems, external layout context)?' If the answer is NO, you MUST either decompose the task into smaller steps that gather the missing information, or ask clarifying questions. Do NOT claim a file can dynamically position itself relative to text or external elements – that is not possible in a standalone SVG.\n"
     "- 'questions' is for ambiguous steps that need more details before proceeding.\n\n"
 
     "GOOD EXAMPLES:\n"
@@ -1137,7 +1157,9 @@ void process_project(const fs::path& project_dir) {
     "You must NOT use echo or any shell command. The only commands you may use are: join, move, copy, zip, ftp, sftp, search, insert. All content creation must be delegated to the leaf generation step (via generate).\n"
     "Note: You may only reference filenames in these commands – never embed actual code, colours, or SVG. All content comes from generated files, this ensures you split tasks up correctly.\n\n"
     "If you choose 'generate', you MUST include a \"files\" array. Do NOT include \"substeps\" or any other fields besides \"files\". The \"files\" array must contain objects with \"filename\" and \"description\" (and optionally \"content\" if you want to embed the file content directly).\n"
-    "Accumulated Project Context:\n" + accumulated_context;
+    "Accumulated Project Context:\n" + accumulated_context + "\n\n"
+    "IMPORTANT: It is 100% essential that you plan the project properly. Are summary information passed on, are the details enough for the sub-project/tasks to do. IF you DO NOT plan properly then the project will work for hours to be rejected later on. Remember no code, but the project plan needs details/summaries on where or what to put where."
+    ;
 
         std::cout << "  Querying AI PM for recursive coordination action...\n";
         std::string api_raw = call_ollama_api(pm_expert_prompt, "action.json", dummy_sim);
@@ -1384,9 +1406,20 @@ void process_project(const fs::path& project_dir) {
 // ============================================================================
 // MAIN ENTRY POINT
 // ============================================================================
-
+#include "ProjectScanner.h"
 int main(int argc, char* argv[]) {
-    // 1. Configuration File Loading
+    curl_global_init(CURL_GLOBAL_ALL);
+    std::cout << "**** Autonomous Automation ****\r\n *** STARTING" << std::endl;
+    ProjectScanner projectScanner;
+    projectScanner.run("");
+
+
+    std::cout << "Cleaning up" << std::endl;
+    curl_global_cleanup();
+    std::cout << "**** Autonomous Automation ****\r\n *** CLOSNG" << std::endl;
+    return 0;
+
+/*     // 1. Configuration File Loading
     std::string config_path = "config.json";
     if (fs::exists(config_path)) {
         try {
@@ -1459,5 +1492,5 @@ int main(int argc, char* argv[]) {
     std::cout << "Total files failed: " << g_total_files_failed << "\n";
 
     curl_global_cleanup();
-    return 0;
+    return 0; */
 }
