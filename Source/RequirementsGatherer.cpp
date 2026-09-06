@@ -1,7 +1,13 @@
 #include "RequirementsGatherer.h"
 #include "APIRequest.h"
 #include "ProjectCoordinator.h"
+#include <exception>
+#include <filesystem>
+#include <fstream>
+#include <ios>
+#include <iostream>
 #include <nlohmann/json_fwd.hpp>
+#include <sstream>
 #include <string>
 RequirementsGatherer::RequirementsGatherer(std::string instructions){
     this->instructions = instructions;
@@ -15,18 +21,29 @@ void RequirementsGatherer::finalise(){
 
 }
 
-void RequirementsGatherer::gatherRequirements(){
+void RequirementsGatherer::gatherRequirements(std::string lastResponse, std::string vettedResponse){
     APIRequest request;
     nlohmann::json fullInstructions;
-    fullInstructions["instructions"] = 
-    "Please turn the requirements into a json of full requirements. Break it down into sub-projects, where a sub-project will have a different kind of output. e.g. Graphics, website, data collation etc. Ensure they are only high level requirements as each sub-project will refine more requirements into a higher level of detail.\n"
-    "1. The requirement prompt must contain the full context of the requirements for the sub-project, sub-projects DO NOT know about the requirements for the overall project to avoid hallucinations with too much unrequired detail.\n"
-    "2. The ordering MUST be logically so pre-requsites are fulfilled. e.g. If an image is required this must be done before it is required. IF it requires research it should be done first, not afterwards.\n"
-    "3. There should always be at least one outputFile but the purpose of outputFile is to pass it in as inputFile's to other projects. e.g. If it is an SVG output then this will be used for the icon. Or a CSS common across files. ZIP files are okay for outputFiles IF it is not used as an input, otherwise ensure you have multiple files.\n"
-    "4. Focus on splitting into logical sub-project. e.g. If there are two different research topics or research is performed on different sets of files like images, then each set should have it's own sub-project. This is to keep the AI Agent's focussed without hallucinating.\n"
-    "To emphasize 3 - multiple outputFile's are essential AND it should contain the extension of the proposed input for other processes, zip files are only to be used for ADDITIONAL files. If you just use .zip then how does the input process know details about the individual files!\n"
-    "To emphasize 2 - ORDERING is ESSENTIAL. You CANNOT do SEO research for example AFTER you have built a site. You CANNOT create classes AFTER the code uses it. You CANNOT create an image, AFTER you have used them!\n"
-    "To emphasize 1 - We are NOT sending the requirements tag to each sub-project itself. Please instead ensure the requirementPrompt includes the full picture of that requirement. e.g. YOU have to ensure the sub-projects have FULL context of the requirements. You can't just use the term \"the website\" or \"the company\" you have to explain everything IT needs to do the job\n\n";
+    std::string instructionsTag = "instructions";
+    if(vettedResponse!=""){
+        instructionsTag = "originalInstructions";
+        fullInstructions["instructions"] =
+            std::string("Previously requirements gathering instructions were sent as per " + instructionsTag + " however a vet of this failed. Please look at the lastResponse tag and apply the vettedResponse instructions to ensure it complies.\n"
+                        "Respond with the new full json as per the " + instructionsTag + " instructions.\n");
+
+        fullInstructions["lastResponse"] = lastResponse;
+        fullInstructions["vettedResponse"] = vettedResponse;
+    }
+    fullInstructions[instructionsTag] = 
+    std::string("You are the requirements gatherer. Your role is to split all of the requirements into sub-projects, a sub-project is a type of project and should be one single subject. e.g. If researching two things, then it most likely will be two sub-projects. \n"
+    "The projects must be in a logical order, all research projects should be done first and design projects are done prior to the main output projects. e.g. A a research project might be required for multiple requirements. The design is generally done before the output, such as a website would have a design element first.\n"
+    "requirements - These are the requirements provided by the end-user, these are what the project must do. Take care to follow everything is followed as requested and ensure it is compelete."
+    "requirementNumber - MUST be incremental, 1, 2, 3, etc\n"
+    "requirementType - MUST be one of ") + ProjectCoordinator::PROJECT_TYPE_JSON_NAME + std::string(". It must be a single goal and a single project type. You must never combine requirementTypes.\n"
+    "requirementPrompt - The requirement prompt will be passed on to the sub-project AI agent. The requirements are ***NOT*** presented to sub-projects. So it MUST specifically say in details what the requirement does. You must refer to input and output files. You must not used generalised terms based on the instructions. i.e. If it is a new company you can't put as per <company name> as that AI agent hasn't read instructions, instead be specific. The goal is to be succinct, to the point and in details but don't include other details that don't apply.\n"
+    "inputFiles - This is an array of input file names and will be fed to the sub-project depending on the type of AI agent. So referring to this in the instructions is important. IF it isn't supplied by the user then it should be an output of another process\n"
+    "outputFiles - This is an array of output file names. There must be at least one outputFile and if a generic outputFile is used such as a zip you still need a specify the main output file. e.g. An SVG, PNG, mov etc.\n\n"
+    );
 
     fullInstructions["requirements"] = instructions;
 
@@ -59,7 +76,7 @@ void RequirementsGatherer::gatherRequirements(){
     "  \"requirementType\": \"Research\","
     "  \"requirementNumber\": \"1\","
     "  \"requirementName\": \"Research_Dog\","
-    "  \"requirementPrompt\": \"Using three downloaded images of a dog provided, research the dog colours and body part shapes in order to draw the shape at a later date.\","
+    "  \"requirementPrompt\": \"Using the image dog_1.png, dog_2.png and dog_3.png find the dog. Look at each dog part and analyze the shapes of each body part as though you were telling a blind person how to draw the dog when they have never seen one. Assume they only know the main shapes. Use a json containing the part name and a list of what shape to draw where to have a complete dog. List the dog colours in each image in a separate json array.\","
     "  \"inputFiles\": [],"
     "  \"outputFiles\": [{\"fileName\": \"dog_shapes.txt\", \"description\": \"A text file containing the research of a dog for visual\"}]"
     "},"
@@ -84,9 +101,19 @@ void RequirementsGatherer::gatherRequirements(){
     "}"
     "]}";
 
-    
-    request.setup(fullInstructions.dump(), APIRequest::ROLE_REQUIREMENTS_GATHERING, projectPath, "requirementsGathering");
+    //request.stopAllOllamaModels();
+    request.setup(fullInstructions.dump(), APIRequest::ROLE_REQUIREMENTS_GATHERING, projectPath, "requirementsGathering", APIRequest::MODEL_REQUIREMENTS, 8192);
     request.run(projectPath);
+
+    std::string fuzzyLogicCheck = fuzzyLogicCheckGatherRequirements(request.getResponse());
+    if(fuzzyLogicCheck!=""){
+        return gatherRequirements(request.getResponse(), fuzzyLogicCheck);
+    }
+    std::string vetCheck = vetRequirements(fullInstructions.dump(), request.getResponse());
+    if(vetCheck!=""){
+        return gatherRequirements(request.getResponse(), vetCheck);
+    }
+
 }
 
 bool RequirementsGatherer::askQuestions(std::string feedback, std::string lastResponse){
@@ -254,11 +281,282 @@ bool RequirementsGatherer::vetQuestionsVet(std::string request, std::string resp
  
 }
 
+bool RequirementsGatherer::vetRequirementsVet(std::string request, std::string response, std::string vettedRespons){
+    APIRequest apiRequest;
+    nlohmann::json fullInstructions;
 
-std::string RequirementsGatherer::fuzzyLogicCheckGatherRequirements(std::string response){
-   nlohmann::json responseJSON;
-   
+    fullInstructions["instructions"] = 
+    "AI has asked for requirements to be broken down into sub-projects.\n"
+    "A seperate AI vetting process has taken place. Your job is to ensure the vetting took place correctly. IF the vetting is incorrect then we will redo the vetting.\n"
+    "Please ENSURE the vetting process gave the correct response. Answer Yes if you agree or No if you disagree.\n"
+    "The originalRequest is the original requirements being split up. The aiResponse is the response to asking what requirements to be broken down are. The vetResponse is the resulting vetting results. Remember your job is to see if you agree with the vetResponse only.\n";
+
+    fullInstructions["originalRequest"] = request;
+    fullInstructions["aiResponse"] = response;
+    fullInstructions["vetResponse"] = vettedRespons;
+
+    fullInstructions["return_format"] = 
+    "{\"vettingApproved\": \"Yes or No. Yes if the vetted response is correct. Otherwise it must be No\"}";
+    
+    
+
+    fullInstructions["return_success_example"] = 
+    "Requirements json example when successful:\n"
+    "{\"vettingApproved\":\"Yes\"}";
+
+    fullInstructions["return_unsuccessful_example"] = 
+    "Requirements json example when successful:\n"
+    "{\"vettingApproved\":\"No\"}";
+    
+    apiRequest.setup(fullInstructions.dump(), APIRequest::ROLE_REQUIREMENTS_VETTER, projectPath, "requirementsVetVet");
+    apiRequest.run(projectPath);
+    std::string vetResponseText = apiRequest.getResponse();
+
+    nlohmann::json responseJson;
+    try {
+        responseJson = nlohmann::json::parse(vetResponseText);
+    } catch (const std::exception& e) {
+        return vetRequirementsVet(request, response, vettedRespons);
+    }
+    
+    return get_bool_flexible(responseJson, "vettingApproved", false);
+ 
 }
+
+auto getBasename = [](const std::string& file) -> std::string {
+    auto pos = file.find_last_of('.');
+    if (pos == std::string::npos) return file;
+    return file.substr(0, pos);
+};
+
+bool RequirementsGatherer::textAppearsInRequirements(
+    const std::string& needle,
+    const nlohmann::json& requirements)
+{
+    for (const auto& r : requirements) {
+        if (r.contains("requirementName") &&
+            r["requirementName"].is_string() &&
+            r["requirementName"].get<std::string>().find(needle) != std::string::npos)
+            return true;
+
+        if (r.contains("requirementPrompt") &&
+            r["requirementPrompt"].is_string() &&
+            r["requirementPrompt"].get<std::string>().find(needle) != std::string::npos)
+            return true;
+
+        if (r.contains("outputFiles") && r["outputFiles"].is_array()) {
+            for (const auto& out : r["outputFiles"]) {
+                if (out.contains("description") &&
+                    out["description"].is_string() &&
+                    out["description"].get<std::string>().find(needle) != std::string::npos)
+                    return true;
+            }
+        }
+    }
+    return false;
+}
+
+std::string RequirementsGatherer::fuzzyLogicCheckGatherRequirements(const std::string& response) {
+    nlohmann::json responseJSON;
+    try {
+        responseJSON = nlohmann::json::parse(response);
+    } catch (const std::exception& exception) {
+        nlohmann::json err;
+        err["errors"] = nlohmann::json::array();
+        err["errors"].push_back({
+            {"requirementNumber", -1},
+            {"error", std::string("JSON parse error: ") + exception.what()}
+        });
+        return err.dump();
+    } catch (...) {
+        nlohmann::json err;
+        err["errors"] = nlohmann::json::array();
+        err["errors"].push_back({
+            {"requirementNumber", -1},
+            {"error", "Unknown JSON parse error."}
+        });
+        return err.dump();
+    }
+
+    if (!responseJSON.contains("requirements") || !responseJSON["requirements"].is_array()) {
+        nlohmann::json err;
+        err["errors"] = nlohmann::json::array();
+        err["errors"].push_back({
+            {"requirementNumber", -1},
+            {"error", "'requirements' array missing or not an array."}
+        });
+        return err.dump();
+    }
+
+    const auto& requirements = responseJSON["requirements"];
+    if (requirements.empty()) {
+        nlohmann::json err;
+        err["errors"] = nlohmann::json::array();
+        err["errors"].push_back({
+            {"requirementNumber", -1},
+            {"error", "'requirements' array is empty."}
+        });
+        return err.dump();
+    }
+
+    // Allowed project types
+    std::unordered_set<std::string> allowedTypes;
+    for (const auto& pt : ProjectCoordinator::ProjectTypes) {
+        allowedTypes.insert(pt.name);
+    }
+
+    // Track produced files
+    std::unordered_set<std::string> producedFiles;
+
+    // Instructions length
+    const std::size_t instructionsLen = this->instructions.size();
+
+    // Accumulated requirementPrompt length
+    std::size_t totalPromptLen = 0;
+
+    auto getExtension = [](const std::string& file) -> std::string {
+        auto pos = file.find_last_of('.');
+        if (pos == std::string::npos) return "";
+        return file.substr(pos + 1);
+    };
+
+    const std::unordered_map<std::string, std::unordered_set<std::string>> typeExtensions = {
+        {"Video Project", {"mp4","mov","avi","mkv","flv"}},
+        {"Design Project", {"json"}},
+        {"Graphics Project", {"svg","png","jpg","jpeg","obj"}},
+        {"Music Project", {"wav","mp3","flac","midi"}},
+        {"Sound Effect Project", {"wav","mp3","flac"}},
+        {"Documentation Project", {"txt","docx","md","pdf"}},
+        {"Data Project", {"csv","xlsx","json"}},
+        {"Coding Project", {"cpp","py","js","java","exe","dll","so","c"}},
+        {"Website Project", {"html","css","js","php"}}
+    };
+
+    nlohmann::json err;
+    err["errors"] = nlohmann::json::array();
+
+    // Iterate requirements
+    for (std::size_t i = 0; i < requirements.size(); ++i) {
+        const auto& req = requirements[i];
+
+        std::string reqName   = req.value("requirementName", "");
+        std::string reqType   = req.value("requirementType", "");
+        std::string reqPrompt = req.value("requirementPrompt", "");
+
+        totalPromptLen += reqPrompt.size();
+
+        // Rule 5: requirementType must be valid
+        if (allowedTypes.find(reqType) == allowedTypes.end()) {
+            err["errors"].push_back({
+                {"requirementNumber", static_cast<int>(i)},
+                {"error", "Invalid requirementType '" + reqType + "' in '" + reqName + "'."}
+            });
+            return err.dump();
+        }
+
+        // Rule 1: input files must be valid
+        if (req.contains("inputFiles") && req["inputFiles"].is_array()) {
+            for (const auto& input : req["inputFiles"]) {
+                std::string fileName = input.value("fileName", "");
+                if (fileName.empty()) continue;
+
+                bool mentionedInInstructions =
+                    (this->instructions.find(fileName) != std::string::npos);
+                bool producedEarlier =
+                    (producedFiles.find(fileName) != producedFiles.end());
+
+                if (!mentionedInInstructions && !producedEarlier) {
+
+                    std::string basename = getBasename(fileName);
+                    bool appearsInRequirements =
+                        textAppearsInRequirements(basename, requirements);
+
+                    if (!appearsInRequirements) {
+                        err["errors"].push_back({
+                            {"requirementNumber", static_cast<int>(i)},
+                            {"error", "Input file '" + fileName +
+                                      "' not mentioned in instructions, not produced earlier, "
+                                      "and basename '" + basename + "' not found in any requirement."}
+                        });
+                        return err.dump();
+                    }
+                }
+            }
+        }
+
+        // Rule 2: must have outputFiles
+        if (!req.contains("outputFiles") || !req["outputFiles"].is_array() || req["outputFiles"].empty()) {
+            err["errors"].push_back({
+                {"requirementNumber", static_cast<int>(i)},
+                {"error", "Requirement '" + reqName + "' has no outputFiles."}
+            });
+            return err.dump();
+        }
+
+        bool hasNonZipOutput = false;
+
+        for (const auto& output : req["outputFiles"]) {
+            std::string outName = output.value("fileName", "");
+            if (outName.empty()) continue;
+
+            producedFiles.insert(outName);
+
+            std::string ext = getExtension(outName);
+            if (ext != "zip") {
+                hasNonZipOutput = true;
+            }
+
+            auto it = typeExtensions.find(reqType);
+            if (it != typeExtensions.end()) {
+                const auto& allowedExts = it->second;
+                if (!allowedExts.empty() && allowedExts.find(ext) == allowedExts.end()) {
+                    err["errors"].push_back({
+                        {"requirementNumber", static_cast<int>(i)},
+                        {"error", "Output file '" + outName +
+                                  "' has invalid extension '" + ext +
+                                  "' for project type '" + reqType + "'."}
+                    });
+                    return err.dump();
+                }
+            }
+        }
+
+        if (!hasNonZipOutput) {
+            err["errors"].push_back({
+                {"requirementNumber", static_cast<int>(i)},
+                {"error", "Requirement '" + reqName +
+                          "' only produces .zip files or none at all."}
+            });
+            return err.dump();
+        }
+    }
+
+    // NEW Rule 4: accumulated prompt length
+    if (((double)totalPromptLen / (double)instructionsLen) < .4) {
+        err["errors"].push_back({
+            {"requirementNumber", -1},
+            {"error", "Total requirementPrompt length is too short relative to instructions. Please expand the requirementPrompts to ensure the requirements are fully provided for each sub-project."}
+        });
+        return err.dump();
+    }
+
+    // Rule 3: last step cannot be Research Project
+    const auto& lastReq = requirements.back();
+    std::string lastType = lastReq.value("requirementType", "");
+    std::string lastName = lastReq.value("requirementName", "");
+
+    if (lastType == "Research Project") {
+        err["errors"].push_back({
+            {"requirementNumber", static_cast<int>(requirements.size() - 1)},
+            {"error", "Last requirement '" + lastName +
+                      "' is a Research Project. Final step must produce a concrete output."}
+        });
+        return err.dump();
+    }
+
+    return "";
+}
+
 
 std::string RequirementsGatherer::vetQuestions(std::string request, std::string response){
     APIRequest apiRequest;
@@ -325,9 +623,6 @@ std::string RequirementsGatherer::vetQuestions(std::string request, std::string 
         return vetQuestions(request, response);
     }else{
 
-        std::cout << "VET QUESTIONS: " << get_bool_flexible(responseJson, "questionsApproved", false) << std::endl;
-        std::cout << "  RESPONSE JSON: " << responseJson.dump() << std::endl;
-        std::cout << "  RAW RESPONSE: " << apiResponseText << std::endl;
         bool questionsApproved = get_bool_flexible(responseJson, "questionsApproved", false);
         if(questionsApproved){
             return "";
@@ -336,8 +631,230 @@ std::string RequirementsGatherer::vetQuestions(std::string request, std::string 
     }
 }
 
+
+std::string RequirementsGatherer::vetRequirements(std::string request, std::string response){
+    APIRequest apiRequest;
+    nlohmann::json fullInstructions;
+
+    fullInstructions["instructions"] = 
+    "AI has asked to breakdown a project into smaller sub-projects. This is the most crucial part of the requirements gathering.\n"
+    "Please ensure the project is broken down correctly. Eact project should be one goal and there should be no mixing of project outcomes. Research Projects are the only partial exception as the research could be used acrossed many projects.\n"
+    "When responding please ensure a full valid json response is returned. e.g. If you start a json array make sure it is ended so it can be parsed correctly.\n"
+    "The most essential part is each requirementPrompt is exclusively sent to the project manager. It DOES NOT know about the original instructions as it is likely to cause hallucinations. Please ensure these are complete.\n"
+    "Answer Yes if the requirements are satisfactory, Answer No if the requirements are not satisfactory. Provide any feedback that will be passed on to the original AI agent so they can adjust accordingly.\n";
+
+    fullInstructions["originalRequest"] = request;
+    fullInstructions["aiResponse"] = response;
+
+    fullInstructions["return_format"] = 
+    "Here is the return format in JSON:\n"
+    "{\"requirementsApproved\": \"Yes or No. Yes if the requirements are satisfactory, No if the requirements are NOT satisfactory\","
+    "\"general_vetting_feedback\": \"Enter any feedback here that doesn't apply to any particular requirements. e.g. If something is missing or with the response in general.\","
+    " \"feedback\":["
+    "   {\"requirementNumber\": \"ONLY return the requirement number IF it is has the issue\","
+    "    \"requirementName\": \"name of the requirement\","
+    "    \"issue_during_vet\": \"Explain the issue and what is wrong with the requirement\""
+    "   }"
+    "]";
+    
+
+    fullInstructions["return_success_example"] = 
+    "Requirements json example when successful:\n"
+    "{\"requirementsApproved\":\"Yes\"}";
+
+    fullInstructions["return_unsuccessful_example"] = 
+    "Requirements json example when successful:\n"
+    "{\"requirementsApproved\":\"No\"\n"
+    " \"general_vetting_feedback\":\"You missed the requirement on researching the graphics\",\n"
+    " \"feedback\":["
+    "   {\"requirementNumber\": \"4\","
+    "    \"requirementName\": \"Research_Birds_And_Mountains\","
+    "    \"issue_during_vet\": \"This requirement should be split into two as it is researching two different types of things.\""
+    "   },"
+    "   {\"requirementNumber\": \"5\","
+    "    \"requirementName\": \"Generate_Code\","
+    "    \"issue_during_vet\": \"The requirementPrompt does not mention the language nor what is trying to be achieved with the code. Remember instructions are not passed on to each requirement.\""
+    "   },"
+    "   {\"requirementNumber\": \"8\","
+    "    \"requirementName\": \"Generate_3D_Object\","
+    "    \"issue_during_vet\": \"The research requirements should be used as an input and mentioned in the requirementPrompt.\""
+    "   },"
+    "]\n"
+    "}";
+    
+    apiRequest.setup(fullInstructions.dump(), APIRequest::ROLE_REQUIREMENTS_VETTER, projectPath, "requirementsVet", APIRequest::MODEL_REQUIREMENTS);
+    apiRequest.run(projectPath);
+    std::string apiResponseText = apiRequest.getResponse();
+
+    nlohmann::json responseJson;
+    try {
+        responseJson = nlohmann::json::parse(apiResponseText);
+    } catch (const std::exception& e) {
+        std::cerr << "Failed to parse vet response: " << e.what() << std::endl;
+        exit(1);
+    }
+    std::string rawResponse = apiResponseText;
+    if(!vetRequirementsVet(request, response, rawResponse)){
+        return vetRequirements(request, response);
+    }else{
+
+        bool questionsApproved = get_bool_flexible(responseJson, "requirementsApproved", false);
+        if(questionsApproved){
+            return "";
+        }
+        return responseJson.dump();
+    }
+}
 void RequirementsGatherer::runTask(){
     if(askQuestions()){
         gatherRequirements();
     }
+    processSubProjects();
+}
+
+void RequirementsGatherer::processSubProjects(){
+    nlohmann::json jsonObject;
+    std::string requirementsFileName = projectPath + "requirementsGathering_response.json";
+    if(!std::filesystem::exists(requirementsFileName)){
+        std::cerr << "Cannot find " << requirementsFileName << " for processSubProjects. It should be there!" << std::endl;
+        exit(1);
+    }
+    std::stringstream requirementsAsText;
+    try{
+        std::fstream fileRequirements(projectPath + "requirementsGathering_response.json", std::ios_base::in);
+        requirementsAsText << fileRequirements.rdbuf();
+        fileRequirements.close();
+    }catch(std::exception exception){
+        std::cerr << "Error reading file in processSubProjects " << exception.what() << std::endl;
+        exit(1);
+    }catch(...){
+        std::cerr << "Error reading file in processSubProjects"  << std::endl;
+        exit(1);
+    }
+
+    nlohmann::json requirementsAsJson;
+    try{
+        requirementsAsJson = nlohmann::json::parse(requirementsAsText);
+    }catch(std::exception exception){
+        std::cerr << "Error with the requirements file in processSubProjects. " << exception.what() << std::endl;
+        exit(1);
+    }catch(...){
+        std::cerr << "Error with the requirements file in processSubProjects." << std::endl;
+        exit(1);
+    }
+    if(!requirementsAsJson.contains("requirements")){
+        std::cerr << "Expected requirements in processSubProjects" << std::endl;
+        exit(1);
+    }
+    if(!requirementsAsJson["requirements"].is_array()){
+        std::cerr << "Expected requirements as array in processSubProjects" << std::endl;
+        exit(1);
+    }
+    for(const auto& element : requirementsAsJson["requirements"]){
+        if(element.is_object()){
+            if(!element.contains("requirementNumber")){
+                std::cerr << "An object in processSubProjects does not contain requirementNumber" << std::endl;
+                exit(1);
+            }
+            if(!element.contains("requirementName")){
+                std::cerr << "An object in processSubProjects does not contain requirementName" << std::endl;
+                exit(1);
+            }
+            if(!element.contains("requirementType")){
+                std::cerr << "An object in processSubProjects does not contain requirementType" << std::endl;
+                exit(1);
+            }
+            if(!element.contains("requirementPrompt")){
+                std::cerr << "An object in processSubProjects does not contain requirementPrompt" << std::endl;
+                exit(1);
+            }
+            if(!element.contains("inputFiles")){
+                std::cerr << "An object in processSubProjects does not contain inputFiles" << std::endl;
+                exit(1);
+            }
+            if(!element.contains("outputFiles")){
+                std::cerr << "An object in processSubProjects does not contain outputFiles" << std::endl;
+                exit(1);
+            }
+            if(!element["outputFiles"].is_array()){
+                std::cerr << "An object in processSubProjects does not contain outputFiles as an array" << std::endl;
+                exit(1);
+            }
+            std::string requirementNumber = element["requirementNumber"];
+            std::string requirementName = element["requirementName"];
+            std::string requirementType = element["requirementType"];
+            if(!isValidProjectType(requirementType)){
+                std::cerr << requirementType << " is not a valid requirementType for processSubProject" << std::endl;
+                exit(1);
+            }
+            std::string requirementPrompt = element["requirementPrompt"];
+            std::cout << requirementNumber << " - " << requirementName << " - " << requirementType << " - " << " - " << requirementPrompt << std::endl << std::endl;
+
+            std::string newFolderName = standardiseFolderName(requirementNumber, requirementName);
+            newFolderName = projectPath + newFolderName;
+            if(!std::filesystem::exists(newFolderName)){
+                try{
+                    std::filesystem::create_directory(newFolderName);
+                }catch(std::exception exception){
+                    std::cerr << "Failed to create the sub project folder " << newFolderName << ". " << exception.what() << std::endl;
+                    exit(1);
+                }catch(...){
+                    std::cerr << "Failed to create the sub project folder " << newFolderName << "." << std::endl;
+                    exit(1);
+
+                }
+            }
+            std::string newJsonName = newFolderName + "/requirements.json";
+            std::fstream outputJsonFile(newJsonName, std::ios_base::out);
+            try{
+                outputJsonFile << element.dump();
+            }catch(std::exception exception){
+                std::cerr << "Error creating requirements file " << newJsonName << " in processSubProject. " << exception.what() << std::endl;
+                exit(1);
+            }catch(...){
+                std::cerr << "Error creating requirements file " << newJsonName << " in processSubProject." << std::endl;
+                exit(1);
+
+            }
+            outputJsonFile.close();
+
+        }else{
+            std::cerr << "We have a none object in requirements of processSubProjects" << std::endl;
+            exit(1);
+        }
+        
+
+    }
+}
+
+bool RequirementsGatherer::isValidProjectType(std::string projectType){
+    for(ProjectCoordinator::ProjectType type : ProjectCoordinator::ProjectTypes){
+        if(type.name==projectType){
+            return true;
+        }
+    }
+    return false;
+}
+
+std::string RequirementsGatherer::standardiseFolderName(std::string pNumber, std::string pName){
+    std::stringstream newFname;
+    for(char pCharacter : pNumber){
+        if(pCharacter >= '0' && pCharacter <= '9'){
+            newFname << pCharacter;
+        }
+    }
+    newFname << "_";
+    for(char pCharacter : pName){
+        if(
+            (pCharacter >= '0' && pCharacter <= '9')||
+            (pCharacter >= 'A' && pCharacter <= 'Z')||
+            (pCharacter >= 'a' && pCharacter <= 'z')||
+            pCharacter == '_'
+        ){
+            newFname << pCharacter;
+        }else if(pCharacter == ' '){
+            newFname << "_";
+        }
+    }
+    return newFname.str();
 }

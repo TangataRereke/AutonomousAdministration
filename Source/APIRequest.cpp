@@ -6,7 +6,7 @@
 #include <iostream>
 #include <nlohmann/json_fwd.hpp>
 
-void APIRequest::setup(std::string request, std::string role, std::string projectPath, std::string requestName, std::string model){
+void APIRequest::setup(std::string request, std::string role, std::string projectPath, std::string requestName, std::string model, int contextSize){
     this->requestName = requestName;
     this->stringRequest = request;
     this->model = model;
@@ -15,6 +15,7 @@ void APIRequest::setup(std::string request, std::string role, std::string projec
     this->requestName = requestName;
     this->requestFileName = projectPath + requestName + "_request.json";
     this->responseFileName = projectPath + requestName + "_response.json";
+    this->contextSize = contextSize;
 }
 
 void APIRequest::initialise(){
@@ -64,8 +65,38 @@ void APIRequest::extract_stats(const nlohmann::json& response, GlobalStats& stat
         header.close();
     }
     std::ofstream statsFile(statsPath, std::ios_base::out | std::ios_base::app);
-    statsFile << requestName << "," << model << "," << attempts << "," << newStats.prompt_tokens << "," << newStats.response_tokens << "," << newStats.prompt_duration_ns << "," << (double)newStats.prompt_duration_ns / 1000000 << "," << (double)newStats.prompt_duration_ns / (1000000*1000) << "," << (double)newStats.prompt_duration_ns / ((unsigned int)1000000*60000) << "," << newStats.response_duration_ns << "," << (double)newStats.response_duration_ns / 1000000 << "," << (double)newStats.response_duration_ns / (1000000*1000) << "," << (double)newStats.response_duration_ns / ((unsigned int)1000000*60000) << std::endl;
+    statsFile << requestName << "," << model << "," << attempts << "," << newStats.prompt_tokens << "," << newStats.response_tokens << "," << newStats.prompt_duration_ns << "," << (double)newStats.prompt_duration_ns / 1000000 << "," << (double)newStats.prompt_duration_ns / (1000000*1000) << "," << (double)newStats.prompt_duration_ns / ((unsigned int)10000000*60000) << "," << newStats.response_duration_ns << "," << (double)newStats.response_duration_ns / 1000000 << "," << (double)newStats.response_duration_ns / (1000000*1000) << "," << (double)newStats.response_duration_ns / ((unsigned int)10000000*60000) << std::endl;
     statsFile.close();
+}
+
+/*std::string exec(const char* cmd) {
+     std::array<char, 128> buffer{};
+    std::string result;
+    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+    if (!pipe) return "";
+    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+        result += buffer.data();
+    }
+    return result; 
+}*/
+
+void APIRequest::stopAllOllamaModels() {
+/*     std::string ps = exec("ollama ps");
+
+    std::istringstream iss(ps);
+    std::string line;
+
+    while (std::getline(iss, line)) {
+        if (line.find("running") != std::string::npos ||
+            line.find("idle") != std::string::npos) {
+
+            // Extract model name (first column)
+            std::string model = line.substr(0, line.find_first_of(" \t"));
+            std::string cmd = "ollama stop " + model;
+            exec(cmd.c_str());
+        }
+    } */
+     std::cout << "STOP ALL MODELS DOES NOT NEED TO RUN NOW AS OLLAMA DOES THIS AUTOMATICALLY" << std::endl;
 }
 
 void APIRequest::runTask(){
@@ -96,11 +127,25 @@ void APIRequest::runTask(){
     instructions["response_type"] = "json";
     instructions["request"] = stringRequest;
 
-
+    std::cout << "REQUEST NAME:" << requestName << std::endl;
+    std::cout << "Request file:  " << requestFileName << std::endl;
+    std::cout << "Response file: " << responseFileName << std::endl;
+    std::cout << "StringRequest size: " << stringRequest.size() << std::endl;
+    std::cout << "MODEL: " << model << std::endl;
 
     nlohmann::json payload;
     payload["model"] = model;
     payload["stream"] = false;
+    if(contextSize>0){
+        payload["options"]["num_ctx"] = contextSize;
+    }
+
+    // Add these memory-saving options
+    payload["options"]["num_gpu"] = 0;      // Force CPU only (uses system RAM, not VRAM)
+    payload["options"]["f16_kv"] = true;    // Half-precision KV cache (saves ~50% cache RAM)
+    payload["options"]["num_threads"] = 8;  // Adjust to your physical core count
+    payload["options"]["batch_size"] = 256; // Smaller batch = less memory
+
     payload["messages"] = nlohmann::json::array({
         {
             {"role", "user"},
@@ -140,6 +185,7 @@ void APIRequest::runTask(){
         response = nlohmann::json::parse(stringResponse);
     } catch (const nlohmann::json::parse_error& e) {
         std::cerr << e.what() << " in APIRequest::runTask, retrying. Attempt: " << attempts << std::endl;
+        std::cerr << "FULL RESPONSE: " << stringResponse << std::endl;
         runTask();
         return;
     }
@@ -147,11 +193,19 @@ void APIRequest::runTask(){
     try{
         stringResponse = extractInnerJson(stringResponse);
     } catch (const std::exception& e) {
+        std::cerr << "Request file:  " << requestFileName << std::endl;
+        std::cerr << "Response file: " << responseFileName << std::endl;
+        std::cerr << "StringRequest size: " << stringRequest.size() << std::endl;
+
         std::cerr << e.what() << " in APIRequest::runTask, retrying. Attempt: " << attempts << std::endl;
         std::cout << "String response: " << stringResponse << std::endl;
         runTask();
         return;
     }catch(...){
+        std::cerr << "Request file:  " << requestFileName << std::endl;
+        std::cerr << "Response file: " << responseFileName << std::endl;
+        std::cerr << "StringRequest size: " << stringRequest.size() << std::endl;
+
         std::cerr << "Unknonwn error  in APIRequest::runTask, retrying. Attempt: " << attempts << std::endl;
         std::cout << "String response: " << stringResponse << std::endl;
         runTask();

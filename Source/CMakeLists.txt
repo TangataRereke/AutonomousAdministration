@@ -29,6 +29,7 @@ add_executable(AutonomousAdministration
     ProjectCoordinator.cpp
     RequirementsGatherer.cpp
     APIRequest.cpp
+    ISubProject.cpp
 )
 
 # Include directories

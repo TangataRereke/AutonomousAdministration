@@ -3,6 +3,8 @@ file(REMOVE_RECURSE
   "AutonomousAdministration.pdb"
   "CMakeFiles/AutonomousAdministration.dir/APIRequest.cpp.o"
   "CMakeFiles/AutonomousAdministration.dir/APIRequest.cpp.o.d"
+  "CMakeFiles/AutonomousAdministration.dir/ISubProject.cpp.o"
+  "CMakeFiles/AutonomousAdministration.dir/ISubProject.cpp.o.d"
   "CMakeFiles/AutonomousAdministration.dir/IWorker.cpp.o"
   "CMakeFiles/AutonomousAdministration.dir/IWorker.cpp.o.d"
   "CMakeFiles/AutonomousAdministration.dir/ProjectCoordinator.cpp.o"

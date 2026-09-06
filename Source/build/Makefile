@@ -153,6 +153,30 @@ APIRequest.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/AutonomousAdministration.dir/build.make CMakeFiles/AutonomousAdministration.dir/APIRequest.cpp.s
 .PHONY : APIRequest.cpp.s
 
+ISubProject.o: ISubProject.cpp.o
+.PHONY : ISubProject.o
+
+# target to build an object file
+ISubProject.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AutonomousAdministration.dir/build.make CMakeFiles/AutonomousAdministration.dir/ISubProject.cpp.o
+.PHONY : ISubProject.cpp.o
+
+ISubProject.i: ISubProject.cpp.i
+.PHONY : ISubProject.i
+
+# target to preprocess a source file
+ISubProject.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AutonomousAdministration.dir/build.make CMakeFiles/AutonomousAdministration.dir/ISubProject.cpp.i
+.PHONY : ISubProject.cpp.i
+
+ISubProject.s: ISubProject.cpp.s
+.PHONY : ISubProject.s
+
+# target to generate assembly for a file
+ISubProject.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AutonomousAdministration.dir/build.make CMakeFiles/AutonomousAdministration.dir/ISubProject.cpp.s
+.PHONY : ISubProject.cpp.s
+
 IWorker.o: IWorker.cpp.o
 .PHONY : IWorker.o
 
@@ -285,6 +309,9 @@ help:
 	@echo "... APIRequest.o"
 	@echo "... APIRequest.i"
 	@echo "... APIRequest.s"
+	@echo "... ISubProject.o"
+	@echo "... ISubProject.i"
+	@echo "... ISubProject.s"
 	@echo "... IWorker.o"
 	@echo "... IWorker.i"
 	@echo "... IWorker.s"
