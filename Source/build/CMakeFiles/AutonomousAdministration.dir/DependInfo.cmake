@@ -14,6 +14,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/james/source/AutonomousAdministration/Source/ProjectCoordinator.cpp" "CMakeFiles/AutonomousAdministration.dir/ProjectCoordinator.cpp.o" "gcc" "CMakeFiles/AutonomousAdministration.dir/ProjectCoordinator.cpp.o.d"
   "/home/james/source/AutonomousAdministration/Source/ProjectScanner.cpp" "CMakeFiles/AutonomousAdministration.dir/ProjectScanner.cpp.o" "gcc" "CMakeFiles/AutonomousAdministration.dir/ProjectScanner.cpp.o.d"
   "/home/james/source/AutonomousAdministration/Source/RequirementsGatherer.cpp" "CMakeFiles/AutonomousAdministration.dir/RequirementsGatherer.cpp.o" "gcc" "CMakeFiles/AutonomousAdministration.dir/RequirementsGatherer.cpp.o.d"
+  "/home/james/source/AutonomousAdministration/Source/SubResearchProject.cpp" "CMakeFiles/AutonomousAdministration.dir/SubResearchProject.cpp.o" "gcc" "CMakeFiles/AutonomousAdministration.dir/SubResearchProject.cpp.o.d"
   "/home/james/source/AutonomousAdministration/Source/main.cpp" "CMakeFiles/AutonomousAdministration.dir/main.cpp.o" "gcc" "CMakeFiles/AutonomousAdministration.dir/main.cpp.o.d"
   )
 

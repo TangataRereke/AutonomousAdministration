@@ -3,6 +3,9 @@
     #include "IWorker.h"
 #include "IWorker.h"
 #include <string>
+#include <fstream>
+#include "ISubProject.h"
+#include "SubResearchProject.h"
 
     class ProjectCoordinator : public IWorker{
         public:
@@ -38,5 +41,7 @@
             std::string projectName = "";
             std::string instructions = "";
             bool topLevel = false;
+            void runProjects();
+            void runProject(std::string path);
     };
 #endif

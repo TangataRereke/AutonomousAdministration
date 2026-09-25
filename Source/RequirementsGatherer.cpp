@@ -36,6 +36,7 @@ void RequirementsGatherer::gatherRequirements(std::string lastResponse, std::str
     }
     fullInstructions[instructionsTag] = 
     std::string("You are the requirements gatherer. Your role is to split all of the requirements into sub-projects, a sub-project is a type of project and should be one single subject. e.g. If researching two things, then it most likely will be two sub-projects. \n"
+    "Consider the purpose of the projects and it is important to give as much information as possible, however, don't confuse the AI by giving it unrequired information. For example if a project is to research how to draw something do not mention parts of the project. Such as a bird that will be singing and dancing, if the project is to research how a bird looks it does not need to know it is singing or dancing. It just needs to know how it looks.\n"
     "The projects must be in a logical order, all research projects should be done first and design projects are done prior to the main output projects. e.g. A a research project might be required for multiple requirements. The design is generally done before the output, such as a website would have a design element first.\n"
     "requirements - These are the requirements provided by the end-user, these are what the project must do. Take care to follow everything is followed as requested and ensure it is compelete."
     "requirementNumber - MUST be incremental, 1, 2, 3, etc\n"
@@ -788,7 +789,6 @@ void RequirementsGatherer::processSubProjects(){
                 exit(1);
             }
             std::string requirementPrompt = element["requirementPrompt"];
-            std::cout << requirementNumber << " - " << requirementName << " - " << requirementType << " - " << " - " << requirementPrompt << std::endl << std::endl;
 
             std::string newFolderName = standardiseFolderName(requirementNumber, requirementName);
             newFolderName = projectPath + newFolderName;

@@ -1,3 +1,4 @@
+clear
 # 1. Create a separate build folder (keeps your source folder clean)
 mkdir build
 cd build

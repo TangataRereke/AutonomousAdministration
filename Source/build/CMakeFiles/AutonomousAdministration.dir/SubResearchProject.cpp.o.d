@@ -1,7 +1,8 @@
-CMakeFiles/AutonomousAdministration.dir/ProjectCoordinator.cpp.o: \
- /home/james/source/AutonomousAdministration/Source/ProjectCoordinator.cpp \
+CMakeFiles/AutonomousAdministration.dir/SubResearchProject.cpp.o: \
+ /home/james/source/AutonomousAdministration/Source/SubResearchProject.cpp \
  /usr/include/stdc-predef.h \
- /home/james/source/AutonomousAdministration/Source/ProjectCoordinator.h \
+ /home/james/source/AutonomousAdministration/Source/SubResearchProject.h \
+ /home/james/source/AutonomousAdministration/Source/ISubProject.h \
  /home/james/source/AutonomousAdministration/Source/IWorker.h \
  /usr/include/c++/13/string /usr/include/c++/13/bits/requires_hosted.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
@@ -153,13 +154,8 @@ CMakeFiles/AutonomousAdministration.dir/ProjectCoordinator.cpp.o: \
  /usr/include/c++/13/bits/locale_facets.tcc \
  /usr/include/c++/13/bits/basic_ios.tcc \
  /usr/include/c++/13/bits/ostream.tcc /usr/include/c++/13/istream \
- /usr/include/c++/13/bits/istream.tcc /usr/include/c++/13/fstream \
- /usr/include/c++/13/bits/codecvt.h \
- /usr/include/x86_64-linux-gnu/c++/13/bits/basic_file.h \
- /usr/include/x86_64-linux-gnu/c++/13/bits/c++io.h \
- /usr/include/c++/13/bits/fstream.tcc \
- /home/james/source/AutonomousAdministration/Source/ISubProject.h \
- /usr/include/c++/13/list /usr/include/c++/13/bits/stl_list.h \
+ /usr/include/c++/13/bits/istream.tcc /usr/include/c++/13/list \
+ /usr/include/c++/13/bits/stl_list.h \
  /usr/include/c++/13/bits/allocated_ptr.h \
  /usr/include/c++/13/ext/aligned_buffer.h \
  /usr/include/c++/13/bits/list.tcc /usr/include/nlohmann/json.hpp \
@@ -264,7 +260,8 @@ CMakeFiles/AutonomousAdministration.dir/ProjectCoordinator.cpp.o: \
  /usr/include/c++/13/bits/locale_facets_nonio.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/time_members.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/messages_members.h \
- /usr/include/libintl.h /usr/include/c++/13/bits/locale_facets_nonio.tcc \
+ /usr/include/libintl.h /usr/include/c++/13/bits/codecvt.h \
+ /usr/include/c++/13/bits/locale_facets_nonio.tcc \
  /usr/include/c++/13/bits/locale_conv.h /usr/include/c++/13/iomanip \
  /usr/include/c++/13/bits/quoted_string.h /usr/include/c++/13/sstream \
  /usr/include/c++/13/bits/sstream.tcc /usr/include/c++/13/codecvt \
@@ -333,8 +330,4 @@ CMakeFiles/AutonomousAdministration.dir/ProjectCoordinator.cpp.o: \
  /usr/include/x86_64-linux-gnu/curl/websockets.h \
  /usr/include/x86_64-linux-gnu/curl/mprintf.h /usr/include/c++/13/thread \
  /usr/include/c++/13/bits/std_thread.h \
- /usr/include/c++/13/bits/this_thread_sleep.h \
- /home/james/source/AutonomousAdministration/Source/SubResearchProject.h \
- /home/james/source/AutonomousAdministration/Source/RequirementsGatherer.h \
- /usr/include/c++/13/unordered_set \
- /usr/include/c++/13/bits/unordered_set.h
+ /usr/include/c++/13/bits/this_thread_sleep.h

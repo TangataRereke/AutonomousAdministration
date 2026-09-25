@@ -335,4 +335,8 @@ CMakeFiles/AutonomousAdministration.dir/RequirementsGatherer.cpp.o: \
  /usr/include/c++/13/fstream \
  /usr/include/x86_64-linux-gnu/c++/13/bits/basic_file.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++io.h \
- /usr/include/c++/13/bits/fstream.tcc
+ /usr/include/c++/13/bits/fstream.tcc \
+ /home/james/source/AutonomousAdministration/Source/ISubProject.h \
+ /usr/include/c++/13/list /usr/include/c++/13/bits/stl_list.h \
+ /usr/include/c++/13/bits/list.tcc \
+ /home/james/source/AutonomousAdministration/Source/SubResearchProject.h

@@ -13,6 +13,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/AutonomousAdministration.dir/ProjectScanner.cpp.o.d"
   "CMakeFiles/AutonomousAdministration.dir/RequirementsGatherer.cpp.o"
   "CMakeFiles/AutonomousAdministration.dir/RequirementsGatherer.cpp.o.d"
+  "CMakeFiles/AutonomousAdministration.dir/SubResearchProject.cpp.o"
+  "CMakeFiles/AutonomousAdministration.dir/SubResearchProject.cpp.o.d"
   "CMakeFiles/AutonomousAdministration.dir/main.cpp.o"
   "CMakeFiles/AutonomousAdministration.dir/main.cpp.o.d"
 )

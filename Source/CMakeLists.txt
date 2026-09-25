@@ -30,6 +30,7 @@ add_executable(AutonomousAdministration
     RequirementsGatherer.cpp
     APIRequest.cpp
     ISubProject.cpp
+    SubResearchProject.cpp
 )
 
 # Include directories

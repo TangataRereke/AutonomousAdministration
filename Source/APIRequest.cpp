@@ -159,7 +159,7 @@ void APIRequest::runTask(){
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_str.c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &stringResponse);
-    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 600L);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 6000L);
     curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 10L);
 
     int backoff_ms = 1000;

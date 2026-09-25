@@ -273,6 +273,30 @@ RequirementsGatherer.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/AutonomousAdministration.dir/build.make CMakeFiles/AutonomousAdministration.dir/RequirementsGatherer.cpp.s
 .PHONY : RequirementsGatherer.cpp.s
 
+SubResearchProject.o: SubResearchProject.cpp.o
+.PHONY : SubResearchProject.o
+
+# target to build an object file
+SubResearchProject.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AutonomousAdministration.dir/build.make CMakeFiles/AutonomousAdministration.dir/SubResearchProject.cpp.o
+.PHONY : SubResearchProject.cpp.o
+
+SubResearchProject.i: SubResearchProject.cpp.i
+.PHONY : SubResearchProject.i
+
+# target to preprocess a source file
+SubResearchProject.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AutonomousAdministration.dir/build.make CMakeFiles/AutonomousAdministration.dir/SubResearchProject.cpp.i
+.PHONY : SubResearchProject.cpp.i
+
+SubResearchProject.s: SubResearchProject.cpp.s
+.PHONY : SubResearchProject.s
+
+# target to generate assembly for a file
+SubResearchProject.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AutonomousAdministration.dir/build.make CMakeFiles/AutonomousAdministration.dir/SubResearchProject.cpp.s
+.PHONY : SubResearchProject.cpp.s
+
 main.o: main.cpp.o
 .PHONY : main.o
 
@@ -324,6 +348,9 @@ help:
 	@echo "... RequirementsGatherer.o"
 	@echo "... RequirementsGatherer.i"
 	@echo "... RequirementsGatherer.s"
+	@echo "... SubResearchProject.o"
+	@echo "... SubResearchProject.i"
+	@echo "... SubResearchProject.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
