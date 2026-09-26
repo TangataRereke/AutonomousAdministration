@@ -1,11 +1,19 @@
 #include "ISubProject.h"
 #include "APIRequest.h"
+#include <cstddef>
 #include <exception>
 #include <filesystem>
 #include <fstream>
+#include <ios>
 #include <iostream>
 #include <nlohmann/json_fwd.hpp>
 #include <string>
+
+std::string lower(std::string s) {
+    std::transform(s.begin(), s.end(), s.begin(),
+        [](unsigned char c){ return static_cast<char>(std::tolower(c)); });
+    return s;
+}
 
 ISubProject::ISubProject(std::string setupJson, std::string projectPath){
     this->projectPath = projectPath;
@@ -197,32 +205,126 @@ std::string ISubProject::fuzzyLogicCheckPlanning(nlohmann::json responseJson){
                     errors += "Task number " + std::to_string(expectedNumber) + " scaleType of " + scaleType + " is invalid.\n";
                 }
             }
+            std::string inputImage = "";
             if(!element.contains("inputImage")){
-                errors += "Task number " + std::to_string(expectedNumber) + " does not have an inputImage\n";
+                errors += "Task number " + std::to_string(expectedNumber) + " does not have an inputImage.\n";
             }else{
-                std::string inputImage = element["inputImage"];
-                
+                inputImage = element["inputImage"];
+                std::string ext = lower(inputImage);
+                if(!(inputImage.ends_with(".png")!=std::string::npos||
+                    inputImage.ends_with(".jpg")!=std::string::npos||
+                    inputImage.ends_with(".jpeg")!=std::string::npos||
+                    inputImage.ends_with(".gif")!=std::string::npos
+                )){
+                    errors += "Task number " + std::to_string(expectedNumber) + " does not have a valid inputImage.\n";
+                }
+                if(inputImage.find("/")!=std::string::npos||inputImage.find("\\")!=std::string::npos){
+                    errors += "Task number " + std::to_string(expectedNumber) + " does not have a valid inputImage as it contains a path.\n";
+                }
+            }
+            int inputX = 0;
+            if(!element.contains("inputX")){
+                errors += "Task number " + std::to_string(expectedNumber) + " does not have a valid inputX.\n";                
+            }else{
+                if(element["inputX"].is_number()){
+                    inputX = element["inputX"];
+                }else{
+                    std::string inputXS = element["inputX"];
+                    inputX = stoi(inputXS);
+                }
+                if(inputX <= 10){
+                    errors += "Task number " + std::to_string(expectedNumber) + " does not have a valid inputX of " + std::to_string(inputX) + ".\n";                
+                }
+            }
+            int inputY = 0;
+            if(!element.contains("inputY")){
+                errors += "Task number " + std::to_string(expectedNumber) + " does not have a valid inputY.\n";                
+            }else{
+                if(element["inputY"].is_number()){
+                    inputX = element["inputY"];
+                }else{
+                    std::string inputYS = element["inputY"];
+                    inputY = stoi(inputYS);
+                }
+                if(inputY <= 10){
+                    errors += "Task number " + std::to_string(expectedNumber) + " does not have a valid inputY of " + std::to_string(inputY) + ".\n";                
+                }
+            }
+            std::string outputImage = "";
+            if(!element.contains("outputImage")){
+                errors += "Task number " + std::to_string(expectedNumber) + " does not have an outputImage.\n";
+            }else{
+                outputImage = element["outputImage"];
+                std::string ext = lower(outputImage);
+                if(!(outputImage.ends_with(".png")!=std::string::npos||
+                    outputImage.ends_with(".jpg")!=std::string::npos||
+                    outputImage.ends_with(".jpeg")!=std::string::npos||
+                    outputImage.ends_with(".gif")!=std::string::npos
+                )){
+                    errors += "Task number " + std::to_string(expectedNumber) + " does not have a valid outputImage.\n";
+                }
+                if(outputImage.find("/")!=std::string::npos||outputImage.find("\\")!=std::string::npos){
+                    errors += "Task number " + std::to_string(expectedNumber) + " does not have a valid outputImage as it contains a path.\n";
+                }
+                if(inputImage==outputImage){
+                    errors += "Task number " + std::to_string(expectedNumber) + " cannot have the same outputImage as the inputImage.\n";
+                }
             }
         }else if(taskCommand==COMMAND_SPLIT_TILE_IMAGE){
-
+            std::string inputImage = "";
+            if(!element.contains("inputImage")){
+                errors += "Task number " + std::to_string(expectedNumber) + " does not have an inputImage.\n";
+            }else{
+                inputImage = element["inputImage"];
+                std::string ext = lower(inputImage);
+                if(!(inputImage.ends_with(".png")!=std::string::npos||
+                    inputImage.ends_with(".jpg")!=std::string::npos||
+                    inputImage.ends_with(".jpeg")!=std::string::npos||
+                    inputImage.ends_with(".gif")!=std::string::npos
+                )){
+                    errors += "Task number " + std::to_string(expectedNumber) + " does not have a valid inputImage.\n";
+                }
+                if(inputImage.find("/")!=std::string::npos||inputImage.find("\\")!=std::string::npos){
+                    errors += "Task number " + std::to_string(expectedNumber) + " does not have a valid inputImage as it contains a path.\n";
+                }
+            }
+            int tilesX = 0;
+            if(!element.contains("tilesX")){
+                errors += "Task number " + std::to_string(expectedNumber) + " does not have a valid tilesX.\n";                
+            }else{
+                if(element["tilesX"].is_number()){
+                    tilesX = element["tilesX"];
+                }else{
+                    std::string inputXS = element["tilesX"];
+                    tilesX = stoi(inputXS);
+                }
+            }
+            int tilesY = 0;
+            if(!element.contains("tilesY")){
+                errors += "Task number " + std::to_string(expectedNumber) + " does not have a valid tilesY.\n";                
+            }else{
+                if(element["tilesY"].is_number()){
+                    inputX = element["tilesY"];
+                }else{
+                    std::string inputYS = element["tilesY"];
+                    tilesY = stoi(inputYS);
+                }
+                if(tilesY+tilesX <= 1){
+                    errors += "Task number " + std::to_string(expectedNumber) + " seem to have invalid tilesX or tilesY.\n";                
+                }
+            }            
         }else{
             std::string subErrors = fuzzyLogicSubCheckPlanning(expectedNumber, taskCommand, element);
             if(subErrors.length()>0){
                 errors += subErrors;
             }
         }
+        if(tilesX>0&&tilesY>0){
+            f
+        }
     }
-    /*nlohmann::json commandJson;
-    commandJson[COMMAND_RESIZE_IMAGE][COMMAND_PARAMETER_DESCRIPTION] = "Resizes the inputImage to inputX and inputY and outputs the resulting image to outputImage. Use scaleType to be any of the scaleType. Do not worry about the algorithm as this will be automatically calculated for the best quality.";
-    commandJson[COMMAND_RESIZE_IMAGE]["scaleType"]["chop"] = "Chops the edges evenly of the longest size to fit.";
-    commandJson[COMMAND_RESIZE_IMAGE]["scaleType"]["border"] = "Adds a border evenly on the shortest size, please use use a new input of borderColour which contains the RGB colour to add the border with. e.g. #000000 is black.";
-    commandJson[COMMAND_RESIZE_IMAGE]["scaleType"]["stretch"] = "Image will be stretched.";
-    commandJson[COMMAND_RESIZE_IMAGE][COMMAND_PARAMETER_INPUTS]["inputImage"] = "The file name (without path) to be resized.";
-    commandJson[COMMAND_RESIZE_IMAGE][COMMAND_PARAMETER_INPUTS]["inputX"] = "The new width of the image.";
-    commandJson[COMMAND_RESIZE_IMAGE][COMMAND_PARAMETER_INPUTS]["inputY"] = "The new height of the image.";
-    commandJson[COMMAND_RESIZE_IMAGE][COMMAND_PARAMETER_OUTPUTS]["outputImage"] = "The file name (without path) of the output file.";
-    commandJson[COMMAND_RESIZE_IMAGE][COMMAND_PARAMETER_INPUTS]["scaleType"] = "The type of scaling to be used.";
 
+    /*
     commandJson[COMMAND_SPLIT_TILE_IMAGE][COMMAND_PARAMETER_DESCRIPTION] = "Splits the single image of inputImage into tilesX and tilesY and save it to outputImages. ***DO NOT*** use separate images as an input, separate images need a different task!";
     commandJson[COMMAND_SPLIT_TILE_IMAGE][COMMAND_PARAMETER_INPUTS]["inputImage"] = "The file name (without path) to be split.";
     commandJson[COMMAND_SPLIT_TILE_IMAGE][COMMAND_PARAMETER_INPUTS]["tilesX"] = "How many columns to split the image into.";
